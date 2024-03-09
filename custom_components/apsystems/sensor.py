@@ -33,7 +33,8 @@ SENSOR_ENERGY_DAY = "energy_day"
 SENSOR_ENERGY_LATEST = "energy_latest"
 SENSOR_ENERGY_TOTAL = "energy_total"
 SENSOR_POWER_LATEST = "power_latest"
-SENSOR_CONSUM_LATEST = "consum_latest"
+SENSOR_CONSUMED_LATEST = "consumed_latest"
+SENSOR_EXPORTED_LATEST = "exported_latest"
 SENSOR_POWER_MAX = "power_max_day"
 SENSOR_TIME = "date"
 
@@ -83,8 +84,13 @@ SENSORS = {
         unit=POWER_WATT,
         icon="mdi:solar-power",
     ),
-    SENSOR_CONSUM_LATEST: ApsMetadata(
-        json_key="power_cons",
+    SENSOR_CONSUMED_LATEST: ApsMetadata(
+        json_key="U",
+        unit=POWER_WATT,
+        icon="mdi:solar-power",
+    ),
+    SENSOR_EXPORTED_LATEST: ApsMetadata(
+        json_key="C",
         unit=POWER_WATT,
         icon="mdi:solar-power",
     ),
@@ -250,8 +256,8 @@ class ApsystemsSensor(SensorEntity):
 
 class APsystemsFetcher:
     url_login = "https://www.apsystemsema.com/ema/intoDemoUser.action?id="
-#    url_data = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerOnCurrentDayAjax"
-    url_data = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerWithAllParameterOnCurrentDayAjax"
+    url_data = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerOnCurrentDayAjax"
+    url_data1 = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerWithAllParameterOnCurrentDayAjax"
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Chrome/50.0.2661.102 Firefox/62.0"
@@ -300,13 +306,22 @@ class APsystemsFetcher:
                 self.headers,
                 browser.cookies.get_dict(),
             )
-
+            result_data1 = await self._hass.async_add_executor_job(
+                s.request,
+                "POST",
+                self.url_data1,
+                None,
+                post_data,
+                self.headers,
+                browser.cookies.get_dict(),
+            )
             _LOGGER.debug("status code data: " + str(result_data.status_code))
 
             if result_data.status_code == 204:
                 self.cache = None
             else:
                 self.cache = result_data.json()
+                self.cache.update(result_data1.json())
             _LOGGER.debug(self.cache)
 
             self.cache_timestamp = int(round(time.time() * 1000))
