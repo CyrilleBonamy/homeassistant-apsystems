@@ -33,6 +33,7 @@ SENSOR_ENERGY_DAY = "energy_day"
 SENSOR_ENERGY_LATEST = "energy_latest"
 SENSOR_ENERGY_TOTAL = "energy_total"
 SENSOR_POWER_LATEST = "power_latest"
+SENSOR_CONSUM_LATEST = "consum_latest"
 SENSOR_POWER_MAX = "power_max_day"
 SENSOR_TIME = "date"
 
@@ -79,6 +80,11 @@ SENSORS = {
     ),
     SENSOR_POWER_LATEST: ApsMetadata(
         json_key="power",
+        unit=POWER_WATT,
+        icon="mdi:solar-power",
+    ),
+    SENSOR_CONSUM_LATEST: ApsMetadata(
+        json_key="power_cons",
         unit=POWER_WATT,
         icon="mdi:solar-power",
     ),
@@ -244,7 +250,9 @@ class ApsystemsSensor(SensorEntity):
 
 class APsystemsFetcher:
     url_login = "https://www.apsystemsema.com/ema/intoDemoUser.action?id="
-    url_data = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerOnCurrentDayAjax"
+#    url_data = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerOnCurrentDayAjax"
+    url_data = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerWithAllParameterOnCurrentDayAjax"
+
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Chrome/50.0.2661.102 Firefox/62.0"
     }
