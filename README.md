@@ -3,7 +3,7 @@
 # APsystems Sensor for Home Assistant
 This component simplifies the integration of a APsystems inverter:
 * creates up to individuals sensors for easy display or use in automations
-* collects power (W) and energy (KWH) every 5 minutes. There is also a sensor for daily total and max power.
+* collects produced, consumed and exported 'instantaneous powers' (W) and 'total energies' (KWH) every 5 minutes. There is also a sensor for daily total energy and max power produced.
 * extract data from apsystemsema.com web portal instead of hack the ECU connection
 * supports any kind of ASsystems inverter or ECU
 * if enabled, pauses from sunset to sunrise (basically when there no sun)
@@ -11,7 +11,7 @@ This component simplifies the integration of a APsystems inverter:
 * there is a date sensor to identify exactly date/time refers each sensor data
 
 ### URL's Utilised
-The URL called is ``https://apsystemsema.com/ema/ajax/getReportApiAjax/getPowerOnCurrentDayAjax``
+The URL called are ``https://apsystemsema.com/ema/ajax/getReportApiAjax/getPowerOnCurrentDayAjax``, ``https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerWithAllParameterOnCurrentDayAjax`` and ``https://www.apsystemsema.com/ema/ajax/getReportApiAjax/findMeterEcuEveryYearEnergyInLifeTime``
 It is only called from sunset to sunrise and the sensor going offline at night
 
 ### Installation
