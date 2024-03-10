@@ -12,8 +12,8 @@ import voluptuous as vol  # type: ignore
 from homeassistant.components.sensor import PLATFORM_SCHEMA, SensorEntity
 from homeassistant.const import (
     CONF_NAME,
-    ENERGY_KILO_WATT_HOUR,
-    POWER_WATT,
+    UnitOfEnergy,
+    UnitOfPower,
     STATE_UNAVAILABLE,
     SUN_EVENT_SUNRISE,
     SUN_EVENT_SUNSET,
@@ -67,68 +67,68 @@ class ApsMetadata(NamedTuple):
 SENSORS = {
     SENSOR_ENERGY_DAY: ApsMetadata(
         json_key="total",
-        unit=ENERGY_KILO_WATT_HOUR,
+        unit=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:solar-power",
 	device_class="energy",
         state_class="total_increasing",
     ),
     SENSOR_ENERGY_LATEST: ApsMetadata(
         json_key="energy",
-        unit=ENERGY_KILO_WATT_HOUR,
+        unit=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:solar-power",
 	device_class="energy",
     ),
     SENSOR_POWER_MAX: ApsMetadata(
         json_key="max",
-        unit=POWER_WATT,
+        unit=UnitOfPower.WATT,
         icon="mdi:solar-power",
 	device_class="power",
         state_class="measurement",
     ),
     SENSOR_POWER_LATEST: ApsMetadata(
         json_key="power",
-        unit=POWER_WATT,
+        unit=UnitOfPower.WATT,
         icon="mdi:solar-power",
 	device_class="power",
         state_class="measurement",
     ),
     SENSOR_CONSUMED_LATEST: ApsMetadata(
         json_key="U",
-        unit=POWER_WATT,
+        unit=UnitOfPower.WATT,
         icon="mdi:solar-power",
 	device_class="power",
         state_class="measurement",
     ),
     SENSOR_EXPORTED_LATEST: ApsMetadata(
         json_key="C",
-        unit=POWER_WATT,
+        unit=UnitOfPower.WATT,
         icon="mdi:solar-power",
 	device_class="power",
         state_class="measurement",
     ),
     SENSOR_CONSUMED_TOTAL: ApsMetadata(
         json_key="usageTotal",
-        unit=ENERGY_KILO_WATT_HOUR,
+        unit=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:solar-power",
         device_class="energy",                                                                                     
         state_class="total_increasing",
     ),
     SENSOR_EXPORTED_TOTAL: ApsMetadata(
         json_key="sellTotal",
-        unit=ENERGY_KILO_WATT_HOUR,
+        unit=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:solar-power",
         device_class="energy",                                                                                     
         state_class="total_increasing",
     ),
     SENSOR_ENERGY_TOTAL: ApsMetadata(
         json_key="productionTotal",
-        unit=ENERGY_KILO_WATT_HOUR,
+        unit=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:solar-power",
         device_class="energy",                                                                                     
         state_class="total_increasing",
     ),
     SENSOR_TIME: ApsMetadata(
-        json_key="time",
+        json_key="T",
         icon="mdi:clock-outline",
     ),
 }
@@ -292,9 +292,9 @@ class ApsystemsSensor(SensorEntity):
 
 class APsystemsFetcher:
     url_login = "https://www.apsystemsema.com/ema/intoDemoUser.action?id="
-    url_data = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerOnCurrentDayAjax"
-    url_data1 = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerWithAllParameterOnCurrentDayAjax"
-    url_data2 = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/findMeterEcuEveryYearEnergyInLifeTime"
+    url_data = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerWithAllParameterOnCurrentDayAjax"
+    url_data1 = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/findMeterEcuEveryYearEnergyInLifeTime"
+    url_data2 = "https://www.apsystemsema.com/ema/ajax/getReportApiAjax/getPowerOnCurrentDayAjax"
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Chrome/50.0.2661.102 Firefox/62.0"
@@ -369,8 +369,10 @@ class APsystemsFetcher:
             else:
                 self.cache = result_data.json()
                 self.cache.update(result_data1.json())
-                self.cache.update(result_data2.json())
-
+                try:
+                    self.cache.update(result_data2.json())
+                except:
+                    pass
             _LOGGER.debug(self.cache)
 
             self.cache_timestamp = int(round(time.time() * 1000))
