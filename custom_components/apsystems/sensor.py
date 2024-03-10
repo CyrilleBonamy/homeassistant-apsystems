@@ -86,7 +86,7 @@ SENSORS = {
         state_class="measurement",
     ),
     SENSOR_POWER_LATEST: ApsMetadata(
-        json_key="power",
+        json_key="P",
         unit=UnitOfPower.WATT,
         icon="mdi:solar-power",
 	device_class="power",
